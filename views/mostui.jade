@@ -1,0 +1,114 @@
+doctype html
+html
+  head
+    title MoStUi
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(type='text/javascript', src="http://code.jquery.com/jquery-1.9.1.min.js")
+    script(type='text/javascript', src="http://code.highcharts.com/highcharts.js")
+    script(type='text/javascript', src="http://code.highcharts.com/modules/exporting.js")
+    script.
+      function emptyData() {
+        // generate an array with default values
+        var data = [],
+            now = (new Date()).getTime();
+
+        for (var i = 0; i < 120; i += 1) {
+            data.push({
+                x: now,
+                y: 0
+            });
+        }
+        return data;
+      }
+
+      function loadChart(containerId, host, port) {
+          $('div#' + containerId).highcharts({
+          chart: {
+              type: 'spline',
+              events: {
+                load: function () {
+                  // set up the updating of the chart each second
+                  var seriesUpdate = this.series[0],
+                      seriesInsert = this.series[1],
+                      seriesQuery = this.series[2],
+                      seriesDelete = this.series[3];
+                  setInterval(function () {
+                      $.getJSON("mongoStat/"+host+"/"+port, function(data) {
+
+                        $("#"+containerId).find("p.update").text("update: " + data.update);
+                        $("#"+containerId).find("p.insert").text("insert: " + data.insert);
+                        $("#"+containerId).find("p.query").text("query: " + data.query);
+                        $("#"+containerId).find("p.delete").text("delete: " + data.delete);
+
+                        var t = (new Date()).getTime();
+                        seriesUpdate.addPoint([t, data.update], true, true);
+                        seriesInsert.addPoint([t, data.insert], true, true);
+                        seriesQuery.addPoint([t, data.query], true, true);
+                        seriesDelete.addPoint([t, data.delete], true, true);
+                      });
+                  }, 1000);
+                }
+              }
+          },
+          title: {
+              text: "MongoDB (" + host + ":" + port + ")"
+          },
+          xAxis: {
+              type: 'datetime',
+          },
+          yAxis: {
+              min: 0
+          },
+          series: [{
+              name: 'update',
+              data: emptyData()
+          },
+          {
+              name: 'insert',
+              data: emptyData()
+          },
+          {
+              name: 'query',
+              data: emptyData()
+          },
+          {
+              name: 'delete',
+              data: emptyData()
+          }]
+          });
+      };
+
+      var containerId = 0;
+
+      $(function () {
+        $( "#addStat" ).submit(function( event ) {
+          $('#charts').append('<div id="'+containerId+'" class="container"></div>')
+          $('#'+containerId).append('<p class="update"></p>');
+          $('#'+containerId).append('<p class="insert"></p>');
+          $('#'+containerId).append('<p class="query"></p>');
+          $('#'+containerId).append('<p class="delete"></p>');
+          $('#'+containerId).append('<div class="chart" id="'+containerId +'" style="min-width: 500px; height: 200px; margin: 0 auto"></div>');
+
+          loadChart(containerId, $('input[name=host]').val(), $('input[name=port]').val());
+          containerId = containerId + 1;
+
+          event.preventDefault();
+        });
+      });
+  body
+    div
+      form(id="addStat")
+        table(border="0")
+          tr
+            td(align="right") Host:
+            td
+              input(name="host", value="localhost")
+          tr
+            td(align="right") Port:
+            td
+              input(name="port", value="27017")
+          tr
+            td
+            td
+              input(type="submit" value="Add to statistics")
+    div#charts

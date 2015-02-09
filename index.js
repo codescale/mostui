@@ -5,12 +5,14 @@
 
 var express = require('express');
 var logger = require('morgan');
+var cookieParser = require('cookie-parser');
 var app = express();
 var serverStatus = require('./mongoStat.js').serverStatus;
 
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
+app.use(cookieParser());
 
 function MongoStatDTO(insert, query, update, deleted) {
   this.insert = insert;
@@ -18,7 +20,7 @@ function MongoStatDTO(insert, query, update, deleted) {
   this.update = update;
   this.deleted = deleted;
 }
-
+var year = 60000 * 60 * 24 * 365;
 var mongoStatLatestRaw = {};
 
 app.use(logger('dev'));
@@ -36,6 +38,11 @@ app.get('/', function(req, res){
 
 function getMongoStat (url, callback) {
  	serverStatus(url, function(info) {
+ 		if(!info) {
+	  		callback(new MongoStatDTO(0,0,0,0));
+ 			return;
+ 		}
+
  		// If there are no cached stats
  		if(!mongoStatLatestRaw[url]) {
  			mongoStatLatestRaw[url] = info;
@@ -65,12 +72,31 @@ app.get('/mongoStat/:host/:port', function(req, res) {
 
 	var url = "mongodb://"+host+":"+port;
 	getMongoStat(url, function(data) {
+		var urls = {url:[]};
+		if (req.cookies.urls) {
+			urls = req.cookies.urls;
+		}
+		var addNewUrl = true;
+		for(var i = 0; i<urls.url.length; i++) {
+			if(urls.url[i].host == host && urls.url[i].port == port){
+				addNewUrl = false;
+				break;
+			}
+		}
+		if(addNewUrl) {
+			console.log("Added url: " + url);
+			var newUrl = {
+				host: host,
+				port: port
+			}
+			urls.url.push(newUrl);
+		}
+		res.cookie('urls', urls, { maxAge: year });
 		res.send(data);
 	});
 });
 
 app.get('/mostui', function(req, res){
-
   	res.locals.getMongoStat = getMongoStat;
   	res.render('mostui');
 });

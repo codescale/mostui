@@ -3,7 +3,7 @@ html
   head
     title MoStUi
     link(rel='stylesheet', href='/stylesheets/style.css')
-    script(type='text/javascript', src="http://code.jquery.com/jquery-1.9.1.min.js")
+    script(type='text/javascript', src="http://code.jquery.com/jquery-2.1.3.min.js")
     script(type='text/javascript', src="http://code.highcharts.com/highcharts.js")
     script(type='text/javascript', src="http://code.highcharts.com/modules/exporting.js")
     script.
@@ -12,7 +12,7 @@ html
         var data = [],
             now = (new Date()).getTime();
 
-        for (var i = 0; i < 120; i += 1) {
+        for (var i = 0; i < 240; i += 1) {
             data.push({
                 x: now,
                 y: 0
@@ -21,8 +21,16 @@ html
         return data;
       }
 
-      function loadChart(containerId, host, port) {
-          $('div#' + containerId).highcharts({
+      function loadChart(host, port) {
+          var containerId = host.replace(/\./g,"") + "_" + port;
+          $('#charts').append('<div id="'+containerId+'" class="container"></div>');
+          $('#'+containerId).append('<p class="update"></p>');
+          $('#'+containerId).append('<p class="insert"></p>');
+          $('#'+containerId).append('<p class="query"></p>');
+          $('#'+containerId).append('<p class="delete"></p>');
+          $('#'+containerId).append('<div class="chart" style="min-width: 500px; height: 200px; margin: 0 auto"></div>');
+
+          $('div#' + containerId).find(".chart").highcharts({
           chart: {
               type: 'spline',
               events: {
@@ -34,11 +42,10 @@ html
                       seriesDelete = this.series[3];
                   setInterval(function () {
                       $.getJSON("mongoStat/"+host+"/"+port, function(data) {
-
-                        $("#"+containerId).find("p.update").text("update: " + data.update);
-                        $("#"+containerId).find("p.insert").text("insert: " + data.insert);
-                        $("#"+containerId).find("p.query").text("query: " + data.query);
-                        $("#"+containerId).find("p.delete").text("delete: " + data.delete);
+                        $('div#' + containerId).find(".update").text("update: " + data.update);
+                        $('div#' + containerId).find(".insert").text("insert: " + data.insert);
+                        $('div#' + containerId).find(".query").text("query: " + data.query);
+                        $('div#' + containerId).find(".delete").text("delete: " + data.delete);
 
                         var t = (new Date()).getTime();
                         seriesUpdate.addPoint([t, data.update], true, true);
@@ -78,33 +85,41 @@ html
           });
       };
 
-      var containerId = 0;
-
       $(function () {
+
+        // We excpect to have a cookie like
+        // urls=j:{"url":[{"host":"10.12.45.17","port":"27017"}]}
+        var cookies = document.cookie.split('=');
+        if(cookies && cookies.length == 2) {
+          var urls = decodeURIComponent(cookies[1]).split(':');
+          // Skip the key of the array
+          urls.shift();
+          // And join the rest again
+          urls = urls.join(':');
+          // Parse the rest into JSON-object
+          urls = JSON.parse(urls);
+          // Load the Chart for each URL
+          for(var i=0; i<urls.url.length; i++) {
+            var url = urls.url[i];
+            loadChart(url.host, url.port);
+          }
+        }
+
         $( "#addStat" ).submit(function( event ) {
-          $('#charts').append('<div id="'+containerId+'" class="container"></div>')
-          $('#'+containerId).append('<p class="update"></p>');
-          $('#'+containerId).append('<p class="insert"></p>');
-          $('#'+containerId).append('<p class="query"></p>');
-          $('#'+containerId).append('<p class="delete"></p>');
-          $('#'+containerId).append('<div class="chart" id="'+containerId +'" style="min-width: 500px; height: 200px; margin: 0 auto"></div>');
-
-          loadChart(containerId, $('input[name=host]').val(), $('input[name=port]').val());
-          containerId = containerId + 1;
-
+          loadChart($('input[name=host]').val(), $('input[name=port]').val());
           event.preventDefault();
         });
       });
   body
-    div
-      form(id="addStat")
+    div(id="addStat")
+      form
         table(border="0")
           tr
-            td(align="right") Host:
+            td(align="left") Host:
             td
               input(name="host", value="localhost")
           tr
-            td(align="right") Port:
+            td(align="left") Port:
             td
               input(name="port", value="27017")
           tr

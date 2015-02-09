@@ -1,5 +1,16 @@
 body { }
 
-#input {
+#addStat {
+	margin: 20px;
+}
 
+
+.container {
+	margin-left: 20px;
+}
+
+.container > p {
+	width: 120px;
+	margin: 0px;
+	display: inline-block;
 }

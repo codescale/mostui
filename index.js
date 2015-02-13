@@ -37,7 +37,7 @@ app.get('/', function(req, res){
   res.redirect('/mostui');
 });
 
-function getMongoStat (url, callback) {
+function getMongoStat (requestId, url, callback) {
  	serverStatus(url, function(info) {
  		if(!info) {
 	  		callback(new MongoStatDTO());
@@ -45,20 +45,21 @@ function getMongoStat (url, callback) {
  		}
 
  		// If there are no cached stats
- 		if(!mongoStatLatestRaw[url]) {
- 			mongoStatLatestRaw[url] = info;
+ 		//console.log(requestId);
+ 		if(!mongoStatLatestRaw[requestId]) {
+ 			mongoStatLatestRaw[requestId] = info;
  		}
 
 		// Update DTO
 		var mongoStatDTO = new MongoStatDTO();
-	  	mongoStatDTO.insert = info.opcounters.insert - mongoStatLatestRaw[url].opcounters.insert;
-	  	mongoStatDTO.query = info.opcounters.query - mongoStatLatestRaw[url].opcounters.query;
-	  	mongoStatDTO.update = info.opcounters.update - mongoStatLatestRaw[url].opcounters.update;
-	  	mongoStatDTO.delete = info.opcounters.delete - mongoStatLatestRaw[url].opcounters.delete;
-	  	mongoStatDTO.getmore = info.opcounters.getmore - mongoStatLatestRaw[url].opcounters.getmore;
+	  	mongoStatDTO.insert = info.opcounters.insert - mongoStatLatestRaw[requestId].opcounters.insert;
+	  	mongoStatDTO.query = info.opcounters.query - mongoStatLatestRaw[requestId].opcounters.query;
+	  	mongoStatDTO.update = info.opcounters.update - mongoStatLatestRaw[requestId].opcounters.update;
+	  	mongoStatDTO.delete = info.opcounters.delete - mongoStatLatestRaw[requestId].opcounters.delete;
+	  	mongoStatDTO.getmore = info.opcounters.getmore - mongoStatLatestRaw[requestId].opcounters.getmore;
 
 		// Update latest raw data
-	  	mongoStatLatestRaw[url] = info;
+	  	mongoStatLatestRaw[requestId] = info;
 
 	  	// Use the callback to return new mongo-stat
 	  	callback(mongoStatDTO);
@@ -66,6 +67,7 @@ function getMongoStat (url, callback) {
 }
 
 app.get('/mongoStat/:host/:port', function(req, res) {
+
 	var host = req.params.host,
 		port = req.params.port;
 	if(!host || !port) {
@@ -73,7 +75,8 @@ app.get('/mongoStat/:host/:port', function(req, res) {
 	}
 
 	var url = "mongodb://"+host+":"+port;
-	getMongoStat(url, function(data) {
+	var requestId = req._remoteAddress + "::" + url;
+	getMongoStat(requestId, url, function(data) {
 		var urls = {url:[]};
 		if (req.cookies.urls) {
 			urls = req.cookies.urls;

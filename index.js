@@ -14,11 +14,12 @@ app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
 app.use(cookieParser());
 
-function MongoStatDTO(insert, query, update, deleted) {
-  this.insert = insert;
-  this.query = query;
-  this.update = update;
-  this.deleted = deleted;
+function MongoStatDTO() {
+  this.insert = 0;
+  this.query = 0;
+  this.update = 0;
+  this.deleted = 0;
+  this.getmore = 0;
 }
 var year = 60000 * 60 * 24 * 365;
 var mongoStatLatestRaw = {};
@@ -39,7 +40,7 @@ app.get('/', function(req, res){
 function getMongoStat (url, callback) {
  	serverStatus(url, function(info) {
  		if(!info) {
-	  		callback(new MongoStatDTO(0,0,0,0));
+	  		callback(new MongoStatDTO());
  			return;
  		}
 
@@ -49,11 +50,12 @@ function getMongoStat (url, callback) {
  		}
 
 		// Update DTO
-		var mongoStatDTO = new MongoStatDTO(0,0,0,0);
+		var mongoStatDTO = new MongoStatDTO();
 	  	mongoStatDTO.insert = info.opcounters.insert - mongoStatLatestRaw[url].opcounters.insert;
 	  	mongoStatDTO.query = info.opcounters.query - mongoStatLatestRaw[url].opcounters.query;
 	  	mongoStatDTO.update = info.opcounters.update - mongoStatLatestRaw[url].opcounters.update;
-	  	mongoStatDTO.deleted = info.opcounters.deleted - mongoStatLatestRaw[url].opcounters.deleted;
+	  	mongoStatDTO.delete = info.opcounters.delete - mongoStatLatestRaw[url].opcounters.delete;
+	  	mongoStatDTO.getmore = info.opcounters.getmore - mongoStatLatestRaw[url].opcounters.getmore;
 
 		// Update latest raw data
 	  	mongoStatLatestRaw[url] = info;

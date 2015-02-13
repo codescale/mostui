@@ -28,30 +28,35 @@ html
           $('#'+containerId).append('<p class="insert"></p>');
           $('#'+containerId).append('<p class="query"></p>');
           $('#'+containerId).append('<p class="delete"></p>');
+          $('#'+containerId).append('<p class="getmore"></p>');
           $('#'+containerId).append('<div class="chart" style="min-width: 500px; height: 200px; margin: 0 auto"></div>');
 
           $('div#' + containerId).find(".chart").highcharts({
           chart: {
-              type: 'spline',
+              type: 'line',
+              animation: false,
               events: {
                 load: function () {
                   // set up the updating of the chart each second
                   var seriesUpdate = this.series[0],
                       seriesInsert = this.series[1],
                       seriesQuery = this.series[2],
-                      seriesDelete = this.series[3];
+                      seriesDelete = this.series[3],
+                      seriesGetmore = this.series[4];
                   setInterval(function () {
                       $.getJSON("mongoStat/"+host+"/"+port, function(data) {
                         $('div#' + containerId).find(".update").text("update: " + data.update);
                         $('div#' + containerId).find(".insert").text("insert: " + data.insert);
                         $('div#' + containerId).find(".query").text("query: " + data.query);
                         $('div#' + containerId).find(".delete").text("delete: " + data.delete);
+                        $('div#' + containerId).find(".getmore").text("getmore: " + data.getmore);
 
                         var t = (new Date()).getTime();
                         seriesUpdate.addPoint([t, data.update], true, true);
                         seriesInsert.addPoint([t, data.insert], true, true);
                         seriesQuery.addPoint([t, data.query], true, true);
                         seriesDelete.addPoint([t, data.delete], true, true);
+                        seriesGetmore.addPoint([t, data.getmore], true, true);
                       });
                   }, 1000);
                 }
@@ -80,6 +85,10 @@ html
           },
           {
               name: 'delete',
+              data: emptyData()
+          },
+          {
+              name: 'getmore',
               data: emptyData()
           }]
           });

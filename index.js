@@ -8,6 +8,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var app = express();
 var serverStatus = require('./mongoStat.js').serverStatus;
+var currentOps = require('./mongoStat.js').currentOps;
 
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/views');
@@ -24,7 +25,7 @@ function MongoStatDTO() {
 var year = 60000 * 60 * 24 * 365;
 var mongoStatLatestRaw = {};
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
 
 app.use(function(req, res, next){
   res.locals.expose = {};
@@ -45,7 +46,7 @@ function getMongoStat (requestId, url, callback) {
  		}
 
  		// If there are no cached stats
- 		//console.log(requestId);
+ 		// console.log(requestId);
  		if(!mongoStatLatestRaw[requestId]) {
  			mongoStatLatestRaw[requestId] = info;
  		}
@@ -65,6 +66,29 @@ function getMongoStat (requestId, url, callback) {
 	  	callback(mongoStatDTO);
   	});
 }
+
+function getCurrentOps(requestId, url, callback) {
+	currentOps(url, function(data) {
+		callback(data);
+	});
+}
+
+
+app.get('/currentOps/:host/:port', function(req, res) {
+
+	var host = req.params.host,
+		port = req.params.port;
+	if(!host || !port) {
+		return;
+	}
+
+	var url = "mongodb://"+host+":"+port;
+	var requestId = req._remoteAddress + "::" + url;
+	
+	getCurrentOps(requestId, url, function(data) {
+		res.send(data);
+	});
+});
 
 app.get('/mongoStat/:host/:port', function(req, res) {
 

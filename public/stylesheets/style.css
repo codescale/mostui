@@ -1,16 +1,40 @@
-body { }
+body {
+	background-color: #727272;
+	color: #efefef;
+}
 
 #addStat {
 	margin: 20px;
 }
 
-
 .container {
 	margin-left: 20px;
 }
 
-.container > p {
+.container>div>p {
 	width: 130px;
 	margin: 0px;
 	display: inline-block;
+}
+
+.statistics {
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+}
+
+.chart {
+	min-width: 1400px;
+	height: 220px;
+}
+
+.currentOps {
+	overflow: hidden;
+	background-color: #fff;
+	padding: 10px;
+}
+
+.dataTable {
+	color: #333;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 0.8em;	
 }

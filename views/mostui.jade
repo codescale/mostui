@@ -264,8 +264,6 @@ html
           // Add the currentOps
           statContainer.append("<div class='currentOps'>");
           statContainer.find('.currentOps').append('<table class="display" cellspacing="0" width="420px">');
-          //statContainer.find('table').html("<colgroup><col width='100'><col width='100'><col width='20'></colgroup><thead><tr><td>opid</td><td>operation</td><td>seconds</td></tr></thead>");
-          //statContainer.find('table').append('<tbody>');
           
           $('div#' + containerId).find("table").dataTable( {
               "pageLength": 3,
@@ -281,7 +279,7 @@ html
               $.getJSON("currentOps/"+host+"/"+port, function(ops) {
                 
                 var dataTable = $('div#' + containerId).find("table").DataTable();
-                dataTable.rows().remove();
+                dataTable.rows().remove().draw();
                 
                 var tbl_body = "";
                 var odd_even = false;
@@ -295,17 +293,7 @@ html
                        continue;
                     }
                     dataTable.row.add([opid, op, secs_running]).draw();
-                    
-                    var tbl_row = "";
-                    tbl_row += "<td id='"+opid+"'>" + opid + "</td>";
-                    tbl_row += "<td>" + op + "</td>";
-                    tbl_row += "<td>" + secs_running + "</td>";
-                    
-                    tbl_body += "<tr class=\""+( odd_even ? "odd" : "even")+"\">"+tbl_row+"</tr>";
-                    odd_even = !odd_even;
-                }
-                //$('div#' + containerId).find("tbody").html(tbl_body);
-                
+                }                
               });
           }, 1000);
 

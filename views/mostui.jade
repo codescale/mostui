@@ -266,12 +266,14 @@ html
           statContainer.find('.currentOps').append('<table class="display" cellspacing="0" width="420px">');
           
           $('div#' + containerId).find("table").dataTable( {
-              "pageLength": 3,
               "order": [[ 2, 'desc' ]],
+              "autoWidth": false,
+              "scrollY": 100,
+              "paging": false,
               "columns": [
-                 { "title": "opid" },
-                 { "title": "operation" },
-                 { "title": "seconds" }
+                 { "title": "opid", "width": "80px"},
+                 { "title": "operation", "width": "20px" },
+                 { "title": "seconds", "width": "20px" }
               ]
           } );
           

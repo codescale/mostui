@@ -21,6 +21,7 @@ function MongoStatDTO() {
   this.update = 0;
   this.deleted = 0;
   this.getmore = 0;
+  this.pageFaults = 0;
 }
 var year = 60000 * 60 * 24 * 365;
 var mongoStatLatestRaw = {};
@@ -58,6 +59,7 @@ function getMongoStat (requestId, url, callback) {
 	  	mongoStatDTO.update = info.opcounters.update - mongoStatLatestRaw[requestId].opcounters.update;
 	  	mongoStatDTO.delete = info.opcounters.delete - mongoStatLatestRaw[requestId].opcounters.delete;
 	  	mongoStatDTO.getmore = info.opcounters.getmore - mongoStatLatestRaw[requestId].opcounters.getmore;
+	  	mongoStatDTO.pageFaults = info.extra_info.page_faults - mongoStatLatestRaw[requestId].extra_info.page_faults;
 
 		// Update latest raw data
 	  	mongoStatLatestRaw[requestId] = info;
@@ -113,7 +115,7 @@ app.get('/mongoStat/:host/:port', function(req, res) {
 			}
 		}
 		if(addNewUrl) {
-			console.log("Added url: " + url);
+			console.log("Added url: " + url + " for user: " + requestId);
 			var newUrl = {
 				host: host,
 				port: port

@@ -2,391 +2,6 @@ doctype html
 html
   head
     title MoStUi
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='http://cdn.datatables.net/1.10.5/css/jquery.dataTables.min.css')
-    script(type='text/javascript', src="http://code.jquery.com/jquery-2.1.3.min.js")
-    script(type='text/javascript', src="http://code.highcharts.com/highcharts.js")
-    script(type='text/javascript', src="http://code.highcharts.com/modules/exporting.js")
-    script(type='text/javascript', src="https://cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js")
-    script.
-      function emptyData() {
-        // generate an array with default values
-        var data = [],
-            now = (new Date()).getTime();
-
-        for (var i = 0; i < 240; i += 1) {
-            data.push({
-                x: now,
-                y: 0
-            });
-        }
-        return data;
-      }
-
-      $(function () {
-        /**
-         * Dark theme for Highcharts JS
-         * @author Torstein Honsi
-         */
-        // Load the fonts
-        Highcharts.createElement('link', {
-           href: '//fonts.googleapis.com/css?family=Source+Sans+Pro',
-           rel: 'stylesheet',
-           type: 'text/css'
-        }, null, document.getElementsByTagName('head')[0]);
-
-        Highcharts.theme = {
-           colors: ["#2fd8d5", "#90ee7e", "#f45b5b", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
-              "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
-           chart: {
-              backgroundColor: {
-                 linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
-                 stops: [
-                    [0, '#2a2a2b'],
-                    [1, '#3e3e40']
-                 ]
-              },
-              style: {
-                 fontFamily: "'Source Sans Pro', sans-serif"
-              },
-              plotBorderColor: '#606063'
-           },
-           title: {
-              style: {
-                 color: '#E0E0E3',
-                 textTransform: 'uppercase',
-                 fontSize: '20px'
-              }
-           },
-           subtitle: {
-              style: {
-                 color: '#E0E0E3',
-                 textTransform: 'uppercase'
-              }
-           },
-           xAxis: {
-              gridLineColor: '#707073',
-              labels: {
-                 style: {
-                    color: '#E0E0E3'
-                 }
-              },
-              lineColor: '#707073',
-              minorGridLineColor: '#505053',
-              tickColor: '#707073',
-              title: {
-                 style: {
-                    color: '#A0A0A3'
-
-                 }
-              }
-           },
-           yAxis: {
-              gridLineColor: '#707073',
-              labels: {
-                 style: {
-                    color: '#E0E0E3'
-                 }
-              },
-              lineColor: '#707073',
-              minorGridLineColor: '#505053',
-              tickColor: '#707073',
-              tickWidth: 1,
-              title: {
-                 style: {
-                    color: '#A0A0A3'
-                 }
-              }
-           },
-           tooltip: {
-              backgroundColor: 'rgba(0, 0, 0, 0.85)',
-              style: {
-                 color: '#F0F0F0'
-              }
-           },
-           plotOptions: {
-              series: {
-                 dataLabels: {
-                    color: '#B0B0B3'
-                 },
-                 marker: {
-                    lineColor: '#333'
-                 }
-              },
-              boxplot: {
-                 fillColor: '#505053'
-              },
-              candlestick: {
-                 lineColor: 'white'
-              },
-              errorbar: {
-                 color: 'white'
-              }
-           },
-           legend: {
-              itemStyle: {
-                 color: '#E0E0E3'
-              },
-              itemHoverStyle: {
-                 color: '#FFF'
-              },
-              itemHiddenStyle: {
-                 color: '#606063'
-              }
-           },
-           credits: {
-              style: {
-                 color: '#666'
-              }
-           },
-           labels: {
-              style: {
-                 color: '#707073'
-              }
-           },
-           drilldown: {
-              activeAxisLabelStyle: {
-                 color: '#F0F0F3'
-              },
-              activeDataLabelStyle: {
-                 color: '#F0F0F3'
-              }
-           },
-           navigation: {
-              buttonOptions: {
-                 symbolStroke: '#DDDDDD',
-                 theme: {
-                    fill: '#505053'
-                 }
-              }
-           },
-
-           // scroll charts
-           rangeSelector: {
-              buttonTheme: {
-                 fill: '#505053',
-                 stroke: '#000000',
-                 style: {
-                    color: '#CCC'
-                 },
-                 states: {
-                    hover: {
-                       fill: '#707073',
-                       stroke: '#000000',
-                       style: {
-                          color: 'white'
-                       }
-                    },
-                    select: {
-                       fill: '#000003',
-                       stroke: '#000000',
-                       style: {
-                          color: 'white'
-                       }
-                    }
-                 }
-              },
-              inputBoxBorderColor: '#505053',
-              inputStyle: {
-                 backgroundColor: '#333',
-                 color: 'silver'
-              },
-              labelStyle: {
-                 color: 'silver'
-              }
-           },
-           navigator: {
-              handles: {
-                 backgroundColor: '#666',
-                 borderColor: '#AAA'
-              },
-              outlineColor: '#CCC',
-              maskFill: 'rgba(255,255,255,0.1)',
-              series: {
-                 color: '#7798BF',
-                 lineColor: '#A6C7ED'
-              },
-              xAxis: {
-                 gridLineColor: '#505053'
-              }
-           },
-           scrollbar: {
-              barBackgroundColor: '#808083',
-              barBorderColor: '#808083',
-              buttonArrowColor: '#CCC',
-              buttonBackgroundColor: '#606063',
-              buttonBorderColor: '#606063',
-              rifleColor: '#FFF',
-              trackBackgroundColor: '#404043',
-              trackBorderColor: '#404043'
-           },
-           // special colors for some of the
-           legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
-           background2: '#505053',
-           dataLabelsColor: '#B0B0B3',
-           textColor: '#C0C0C0',
-           contrastTextColor: '#F0F0F3',
-           maskColor: 'rgba(255,255,255,0.3)'
-        };
-
-        // Apply the theme
-        Highcharts.setOptions(Highcharts.theme);
-      });
-
-      function loadChart(host, port) {
-          var containerId = host.replace(/\./g,"") + "_" + port;
-          
-          // Add a container
-          container = document.createElement("div");
-          container.id=containerId;
-          container.className = "container";
-          $('#charts').append(container);
-          container = $('#'+containerId);
-          
-          // Add the text-statistic
-          container.append("<div>");
-          textStat = container.find("div");
-          textStat.append('<p class="update">');
-          textStat.append('<p class="insert">');
-          textStat.append('<p class="query">');
-          textStat.append('<p class="delete">');
-          textStat.append('<p class="getmore">');
-          
-          // Add statistics container
-          statContainer = document.createElement("div");
-          statContainer.className="statistics";
-          container.append(statContainer);
-          statContainer = container.find(".statistics");
-          
-          // Add the chart
-          statContainer.append('<div class="chart">');
-          
-          // Add the currentOps
-          statContainer.append("<div class='currentOps'>");
-          statContainer.find('.currentOps').append('<table class="display" cellspacing="0" width="420px">');
-          
-          $('div#' + containerId).find("table").dataTable( {
-              "order": [[ 2, 'desc' ]],
-              "autoWidth": false,
-              "scrollY": 100,
-              "paging": false,
-              "columns": [
-                 { "title": "opid", "width": "80px"},
-                 { "title": "operation", "width": "20px" },
-                 { "title": "seconds", "width": "20px" }
-              ]
-          } );
-          
-          setInterval(function () {
-              $.getJSON("currentOps/"+host+"/"+port, function(ops) {
-                
-                var dataTable = $('div#' + containerId).find("table").DataTable();
-                dataTable.rows().remove().draw();
-                
-                var tbl_body = "";
-                var odd_even = false;
-                for(var i=0; i < ops.length; i++) {
-                    
-                    opid = ops[i].opid;
-                    op = ops[i].op;
-                    secs_running = ops[i].secs_running;
-                    
-                    if(!secs_running || secs_running < 1) {
-                       continue;
-                    }
-                    dataTable.row.add([opid, op, secs_running]).draw();
-                }                
-              });
-          }, 1000);
-
-          $('div#' + containerId).find(".chart").highcharts({
-          chart: {
-              type: 'line',
-              animation: false,
-              events: {
-                load: function () {
-                  // set up the updating of the chart each second
-                  var seriesUpdate = this.series[0],
-                      seriesInsert = this.series[1],
-                      seriesQuery = this.series[2],
-                      seriesDelete = this.series[3],
-                      seriesGetmore = this.series[4];
-                  setInterval(function () {
-                      $.getJSON("mongoStat/"+host+"/"+port, function(data) {
-                        $('div#' + containerId).find(".update").text("update: " + data.update);
-                        $('div#' + containerId).find(".insert").text("insert: " + data.insert);
-                        $('div#' + containerId).find(".query").text("query: " + data.query);
-                        $('div#' + containerId).find(".delete").text("delete: " + data.delete);
-                        $('div#' + containerId).find(".getmore").text("getmore: " + data.getmore);
-
-                        var t = (new Date()).getTime();
-                        seriesUpdate.addPoint([t, data.update], true, true);
-                        seriesInsert.addPoint([t, data.insert], true, true);
-                        seriesQuery.addPoint([t, data.query], true, true);
-                        seriesDelete.addPoint([t, data.delete], true, true);
-                        seriesGetmore.addPoint([t, data.getmore], true, true);
-                      });
-                  }, 1000);
-                }
-              }
-          },
-          title: {
-              text: "MongoDB (" + host + ":" + port + ")"
-          },
-          xAxis: {
-              type: 'datetime',
-          },
-          yAxis: {
-              min: 0
-          },
-          series: [{
-              name: 'update',
-              data: emptyData()
-          },
-          {
-              name: 'insert',
-              data: emptyData()
-          },
-          {
-              name: 'query',
-              data: emptyData()
-          },
-          {
-              name: 'delete',
-              data: emptyData()
-          },
-          {
-              name: 'getmore',
-              data: emptyData()
-          }]
-          });
-      };
-
-      $(function () {
-
-        // We excpect to have a cookie like
-        // urls=j:{"url":[{"host":"10.12.45.17","port":"27017"}]}
-        var cookies = document.cookie.split('=');
-        if(cookies && cookies.length == 2) {
-          var urls = decodeURIComponent(cookies[1]).split(':');
-          // Skip the key of the array
-          urls.shift();
-          // And join the rest again
-          urls = urls.join(':');
-          // Parse the rest into JSON-object
-          urls = JSON.parse(urls);
-          // Load the Chart for each URL
-          for(var i=0; i<urls.url.length; i++) {
-            var url = urls.url[i];
-            loadChart(url.host, url.port);
-          }
-        }
-
-        $( "#addStat" ).submit(function( event ) {
-          loadChart($('input[name=host]').val(), $('input[name=port]').val());
-          event.preventDefault();
-        });
-      });
   body
     div(id="addStat")
       form
@@ -404,3 +19,47 @@ html
             td
               input(type="submit" value="Add to statistics")
     div#charts
+    
+  
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/stylesheets/dataTables.css')
+  script(type='text/javascript', src="/js/jquery/jquery-2.1.3.min.js")
+  script(type='text/javascript', src="/js/jquery/jquery.dataTables.min.js")
+  script(type='text/javascript', src="/js/highchart/highcharts.js")
+  script(type='text/javascript', src="/js/highchart/exporting.js")
+  script(type='text/javascript', src="/js/highchart/theme.js")
+  script.
+    $(function () {
+
+      // We excpect to have a cookie like
+      // urls=j:{"url":[{"host":"10.12.45.17","port":"27017"}]}
+      var cookies = document.cookie.split('=');
+      
+      if(cookies && cookies.length == 2) {
+        var urls = decodeURIComponent(cookies[1]).split(':');
+        // Skip the key of the array
+        urls.shift();
+        // And join the rest again
+        urls = urls.join(':');
+        // Parse the rest into JSON-object
+        urls = JSON.parse(urls);
+        // Load the Chart for each URL
+        for(var i=0; i<urls.url.length; i++) {
+          var url = urls.url[i];
+          loadChart(url.host, url.port);
+        }
+      }
+      
+      $( "#addStat" ).submit(function( event ) {
+        loadChart($('input[name=host]').val(), $('input[name=port]').val());
+        event.preventDefault();
+      });
+      
+      $( ".closeChart" ).click(function(event) {
+        var chartId = event.toElement.parentElement.parentElement.id;
+        $("#"+chartId).remove();
+        // TODO: remove ip/port from cookies
+        event.preventDefault();
+      });
+    });
+  script(type='text/javascript', src="/js/loadCharts.js")

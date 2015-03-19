@@ -1,6 +1,7 @@
 body {
 	background-color: #727272;
 	color: #efefef;
+	font-family: 'Source Sans Pro', sans-serif;
 }
 
 #addStat {
@@ -9,6 +10,7 @@ body {
 
 .container {
 	margin-left: 20px;
+	margin-right: 20px;
 }
 
 .container>div>p {
@@ -17,23 +19,31 @@ body {
 	display: inline-block;
 }
 
+.container a.closeChart {
+	color: #efefef;
+	float: right;
+	text-align: right;
+	text-decoration: none;
+}
+
 .statistics {
-	display: -webkit-box;
-	-webkit-box-orient: horizontal;
+	display: -webkit-flex;
+	display: flex;
 }
 
 .chart {
-	min-width: 1400px;
 	height: 220px;
+	flex: 1;
 }
 
 .currentOps {
+	width: 25%;
+	margin-left: 12px;
+	padding: 5px;
 	background-color: #fff;
-	padding: 10px;
 }
 
 .dataTable {
 	color: #333;
-	font-family: 'Source Sans Pro', sans-serif;
 	font-size: 0.8em;
 }

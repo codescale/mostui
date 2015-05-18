@@ -3,7 +3,7 @@ html
   head
     title MoStUi
   body
-    div(id="addStat")
+    div#addStat
       form
         table(border="0")
           tr
@@ -31,35 +31,56 @@ html
   script.
     $(function () {
 
+      charts = new Array();
+      
       // We excpect to have a cookie like
       // urls=j:{"url":[{"host":"10.12.45.17","port":"27017"}]}
       var cookies = document.cookie.split('=');
       
       if(cookies && cookies.length == 2) {
-        var urls = decodeURIComponent(cookies[1]).split(':');
+        cookies = decodeURIComponent(cookies[1]).split(':');
         // Skip the key of the array
-        urls.shift();
+        cookies.shift();
         // And join the rest again
-        urls = urls.join(':');
+        cookies = cookies.join(':');
         // Parse the rest into JSON-object
-        urls = JSON.parse(urls);
+        cookies = JSON.parse(cookies);
         // Load the Chart for each URL
-        for(var i=0; i<urls.url.length; i++) {
-          var url = urls.url[i];
-          loadChart(url.host, url.port);
+        for(var i=0; i<cookies.url.length; i++) {
+          var url = cookies.url[i];
+          charts.push(loadChart(url.host, url.port));
         }
       }
       
       $( "#addStat" ).submit(function( event ) {
-        loadChart($('input[name=host]').val(), $('input[name=port]').val());
+        charts.push(loadChart($('input[name=host]').val(), $('input[name=port]').val()));
         event.preventDefault();
       });
       
       $( ".closeChart" ).click(function(event) {
-        var chartId = event.toElement.parentElement.parentElement.id;
-        $("#"+chartId).remove();
-        // TODO: remove ip/port from cookies
         event.preventDefault();
+        
+        var chartId = event.toElement.parentElement.parentElement.id;
+        
+        charts = charts.filter(function(chart) {
+        	if(chart.id === chartId) {
+        	  clearInterval(chart.currentOpIntervalId);
+        	  clearInterval(chart.mongoStatIntervalId);
+        	  return false;
+        	}
+        	return true;
+        });
+
+        $("#"+chartId).remove();
+        chartId = chartId.split('-');
+        host = chartId[0] + '.' + chartId[1] + '.' + chartId[2] + '.';
+        port = chartId[3].split('_');
+        host += port[0];
+        port = port[1];
+        $.getJSON("remove/" + host + "/" + port, function(res) {
+          console.log(decodeURIComponent(document.cookie.split('=')[1]));
+        });
+
       });
     });
   script(type='text/javascript', src="/js/loadCharts.js")

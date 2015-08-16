@@ -61,6 +61,10 @@ app.post('/addServer', urlencodedParser, function (req, res) {
     res.redirect('/', 302);
 });
 
-app.listen(8080);
+// Start Web-Server
+var port = process.env.PORT || 8080;
+app.listen(port, function () {
+    console.log("Express server listening on port %d in %s mode", process.env.PORT, app.settings.env);
+});
 
 module.exports = app;

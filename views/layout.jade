@@ -1,6 +1,12 @@
 doctype html
 html(lang='en')
     head
+        link(rel="stylesheet", type="text/css", href="style.css")
+        block links
         title MostUI
+        block head
     body
-    != body
+        #content
+            block content
+            
+    block script

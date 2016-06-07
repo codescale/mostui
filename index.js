@@ -1,5 +1,7 @@
 // Provide an app internal (simplefied) require function
 require('./lib/app_require');
 
-// Setup the web-server
-appRequire('config/web_server');
+// Setup the express web-server
+appRequire('setup/setup_express');
+// Setup the socketIO
+appRequire('setup/setup_socketIO');

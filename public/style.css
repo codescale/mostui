@@ -1,0 +1,13 @@
+body {
+  background-color: #404040;
+}
+
+.server:before {
+  content: 'X';
+  border: 1px solid grey;
+  margin-right: 2px;
+}
+
+.server:hover:before {
+  color: red;
+}

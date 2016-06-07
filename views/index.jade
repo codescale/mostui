@@ -1,3 +1,23 @@
-form(id="addServer", name="", action="addServer", method="post")
-    input(type="text", placeholder="xxx.xxx.xxx.xxx", name="url")
-    input(type="submit", value="add")
+extends layout
+
+block content
+  div(ng-controller='AppCtrl')
+  p
+    #{mostuiServerList}
+
+  include ./includes/serverManager.jade
+  include ./includes/server.jade
+
+  div(ng-view)
+        
+block script
+  script(type="text/javascript", src="js/libs/jquery.min.js")
+  script(type="text/javascript", src="js/libs/angular.min.js")
+  script(type="text/javascript", src="/socket.io/socket.io.js")
+  script(type="text/javascript", src="js/stats.js")
+  script(type="text/javascript", src="js/app.js")
+  script(type="text/javascript", src="js/controllers.js")
+  script(type="text/javascript", src="js/services.js")
+    
+block links
+  link(rel="import", href="/bower_components/highcharts-chart/highcharts-chart.html")

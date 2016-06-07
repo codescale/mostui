@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="import" href="/bower_components/highcharts-chart/highcharts-chart.html">
+  <link rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html">
+  <link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="/bower_components/paper-card/paper-card.html">
+
+  <title>MostUI</title>
+</head>
+
+<body>
+  <!--
+  <template is="dom-bind" id="#{url}">
+    <highcharts-chart id="splineChart" type="spline" title="[[splineTitle]]" vs-time></highcharts-chart>
+  </template>
+-->
+
+  <link rel="import" href="/bower_components/polymer/polymer.html">
+  <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+  <dom-module id="mostui-dashboard">
+    <!-- Defines the element's style and local DOM -->
+    <template>
+      <style>
+        :host {
+          display: block;
+          padding: 16px;
+        }
+        
+        highcharts-chart {
+          width: 10em;
+          height: 100px;
+          background-color: #404040;
+          --highcharts-min-height: 15em;
+        }
+        
+        #addServer {
+          width: 12em;
+          height: 15em;
+          border: 1px dashed grey;
+        }
+      </style>
+
+      <div class="vertical-section-container centered">
+        <template id="grid" is="dom-repeat" items="{{urls}}">
+          <paper-card>
+            <div class="card-content">
+              <highcharts-chart id="{{item}}" type="spline" vs-time title="{{item}}"></highcharts-chart>
+            </div>
+          </paper-card>
+        </template>
+        <paper-icon-button icon="menu"></paper-icon-button>
+        <div id="addServer">
+          <iron-icon icon="icons:add"></iron-icon>
+          <paper-icon-button icon="add" title="Add Chart"></paper-icon-button>
+        </div>
+      </div>
+    </template>
+
+    <!-- Creates the element's prototype and registers it -->
+    <script>
+      Polymer({
+        is: 'mostui-dashboard',
+        properties: {
+          route: Object
+        },
+        addSeries: function (url) {
+
+          var chart = document.getElementById(url);
+          var data = [];
+          var time = new Date().getTime();
+          for (var i = 0; i < 20; i++) {
+            data.push([time, 0]);
+          }
+
+          this.async(() => {
+
+            chart.addSeries("Update", data, false, {
+              color: {
+                linearGradient: [0, 0, 0, 500],
+                stops: [[0, 'rgba(45,240,219,100)'], [1, 'rgba(255,225,50,54)']]
+              }
+            });
+            chart.addSeries("Insert", data, false, {
+              color: {
+                linearGradient: [0, 0, 0, 500],
+                stops: [[0, 'rgba(45,240,219,100)'], [1, 'rgba(255,225,50,54)']]
+              }
+            });
+            chart.addSeries("Delete", data, false, {
+              color: {
+                linearGradient: [0, 0, 0, 500],
+                stops: [[0, '#B3790A'], [1, '#901818']]
+              }
+            });
+            chart.addSeries("Query", data, false, {
+              color: {
+                linearGradient: [0, 0, 0, 500],
+                stops: [[0, 'rgba(45,240,219,100)'], [1, 'rgba(255,225,50,54)']]
+              }
+            });
+            chart.addSeries("Getmore", data, false, {
+              color: {
+                linearGradient: [0, 0, 0, 500],
+                stops: [[0, 'rgba(45,240,219,100)'], [1, 'rgba(255,225,50,54)']]
+              }
+            });
+            chart.addSeries("Command", data, false, {
+              color: {
+                linearGradient: [0, 0, 0, 500],
+                stops: [[0, '#0A9EB3'], [1, '#182E90']]
+              }
+            });
+          }, 1000);
+        },
+        ready: function () {
+
+          // Socket-IO
+          var io = window.io();
+
+          // Dashboard Element
+          var dashboard = this;
+          dashboard.urls = [];
+
+          // Configure Chart
+          dashboard.highchartOptions = {
+            chart: {
+              height: 200
+            }
+          };
+
+          io.on('serverStatus', function (url, status) {
+
+            var isUrlInDashboard = false;
+            dashboard.urls.forEach((url) => {
+              isUrlInDashboard = true;
+              return;
+            });
+
+            if (isUrlInDashboard) {
+              console.log("<%s> already displayed in Dashboard.", url);
+              return;
+            }
+
+            // Configure Chart
+            dashboard.splineYLabel = "Throughput";
+
+            // Add URL to Dashboard
+            dashboard.urls.push(url);
+            dashboard.notifyPath("urls", dashboard.urls.slice());
+            dashboard.$.grid.render();
+
+            // Add Data-Series to chart
+            dashboard.addSeries(url);
+
+            var chart = document.getElementById(url);
+            chart.highchartOptions = {
+              chart: {
+                height: 100
+              }
+            };
+            chart.resizeChart();
+          });
+        }
+      });
+    </script>
+  </dom-module>
+
+  <mostui-dashboard></mostui-dashboard>
+</body>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="style.css">
+
+<script type="text/javascript" src="js/libs/jquery.min.js"></script>
+<script type="text/javascript" src="js/libs/angular.min.js"></script>
+
+<script type="text/javascript" src="js/stats.js"></script>
+<!--
+<script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/controllers.js"></script>
+<script type="text/javascript" src="js/services.js"></script>
+-->
+
+</html>

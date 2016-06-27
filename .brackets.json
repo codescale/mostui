@@ -1,0 +1,6 @@
+{
+    "jscodehints.detectedExclusions": [
+        "/Users/mkappeller/Documents/workspace/git-mostui/mostui/bower_components/jquery/src/deferred.js",
+        "/Users/mkappeller/Documents/workspace/git-mostui/mostui/bower_components/jquery/src/deprecated.js"
+    ]
+}

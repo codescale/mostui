@@ -1,12 +1,47 @@
 var io = io();
 var Stats = {
-  cache: {
-    update: 0,
-    insert: 0,
-    delete: 0,
-    query: 0,
-    getmore: 0,
-    command: 0
+  cache: {},
+  getCache: function (chart) {
+    var index = chart.id;
+    if (!Stats.cache[index]) {
+      Stats.cache[index] = {
+        update: 0,
+        insert: 0,
+        delete: 0,
+        query: 0,
+        getmore: 0,
+        command: 0
+      }
+    };
+    return Stats.cache[index];
+  },
+  updateStats: function (chart) {
+    // If the Charts-Element is initialized it contains data
+    if (chart._chart) {
+
+      if (!chart._chart.series) {
+        return;
+      }
+
+      var stats = this;
+      var index = "pushData";
+      var time = new Date().getTime();
+      var cache = Stats.getCache(chart);
+
+      chart[index](time, stats.opcounters.update - cache.update, 1);
+      chart[index](time, stats.opcounters.insert - cache.insert, 2);
+      chart[index](time, stats.opcounters.delete - cache.delete, 3);
+      chart[index](time, stats.opcounters.query - cache.query, 4);
+      chart[index](time, stats.opcounters.getmore - cache.getmore, 5);
+      chart[index](time, stats.opcounters.command - cache.command, 6);
+
+      cache.update = stats.opcounters.update;
+      cache.insert = stats.opcounters.insert;
+      cache.delete = stats.opcounters.delete;
+      cache.query = stats.opcounters.query;
+      cache.getmore = stats.opcounters.getmore;
+      cache.command = stats.opcounters.command;
+    }
   }
 };
 
@@ -21,36 +56,9 @@ io.on('mongostat', function (url, stats) {
   // Log statistics
   //  console.log('JSON: ' + JSON.stringify(stats.opcounters));
 
-  // Get the Charts-Element
-  var chart = document.getElementById(url);
-  if (!chart) {
-    return;
-  }
-
-  // If the Charts-Element is initialized it contains data
-  if (chart._chart) {
-
-    if (chart._chart.series && chart._chart.series.length < 7) {
-      return;
-    }
-
-    var index = "pushData";
-    var time = new Date().getTime();
-
-    chart[index](time, stats.opcounters.update - Stats.cache.update, 1);
-    chart[index](time, stats.opcounters.insert - Stats.cache.insert, 2);
-    chart[index](time, stats.opcounters.delete - Stats.cache.delete, 3);
-    chart[index](time, stats.opcounters.query - Stats.cache.query, 4);
-    chart[index](time, stats.opcounters.getmore - Stats.cache.getmore, 5);
-    chart[index](time, stats.opcounters.command - Stats.cache.command, 6);
-
-    Stats.cache.update = stats.opcounters.update;
-    Stats.cache.insert = stats.opcounters.insert;
-    Stats.cache.delete = stats.opcounters.delete;
-    Stats.cache.query = stats.opcounters.query;
-    Stats.cache.getmore = stats.opcounters.getmore;
-    Stats.cache.command = stats.opcounters.command;
-  }
+  // Get all Chart-Elements
+  var charts = document.getElementsByName(url);
+  charts.forEach(Stats.updateStats, stats);
 });
 
 $("#addServer").submit(function (event) {

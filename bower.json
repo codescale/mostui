@@ -1,0 +1,27 @@
+{
+  "name": "mostui",
+  "description": "A web-app displaying mongo-statistics for multiple server.",
+  "main": "index.js",
+  "authors": [
+    "Matthias Kappeller"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "mongodb",
+    "mongo-stat"
+  ],
+  "homepage": "https://github.com/codescale/mostui",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "highcharts-chart": "^1.1.4",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.7",
+    "neon-animation": "^1.2.3"
+  }
+}

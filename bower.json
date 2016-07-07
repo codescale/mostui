@@ -22,6 +22,7 @@
   "dependencies": {
     "highcharts-chart": "^1.1.4",
     "paper-elements": "PolymerElements/paper-elements#^1.0.7",
-    "neon-animation": "^1.2.3"
+    "neon-animation": "^1.2.3",
+    "paper-fab": "^1.2.0"
   }
 }

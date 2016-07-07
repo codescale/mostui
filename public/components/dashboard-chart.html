@@ -1,0 +1,47 @@
+<dom-module id="dashboard-chart">
+  <template>
+    <style>
+      highcharts-chart {
+        width: 10em;
+        background-color: #404040;
+        --highcharts-min-height: 160px;
+      }
+      
+      paper-material {
+        margin: 10px;
+        background-color: white;
+      }
+      
+      paper-fab {
+        position: absolute;
+        margin-top: -20px;
+        margin-left: 120px;
+      }
+      
+      paper-fab.grey {
+        --paper-fab-background: var(--paper-grey-500);
+        --paper-fab-keyboard-focus-background: var(--paper-grey-900);
+      }
+    </style>
+
+    <paper-material id="container" elevation="1">
+      <paper-fab mini icon="clear" title="close" class="grey"></paper-fab>
+      <!-- Host-IP/Name -->
+      <host-input placeholder="Enter Host-IP" label="Host" value="{{url}}" style="margin: 0 5px 0 5px; width: 160px" error-message="Enter a valid hostname or ip!"></host-input>
+      <!-- Chart -->
+      <highcharts-chart name$="[[url]]" title id="[[index]]" type="spline" vs-time></highcharts-chart>
+    </paper-material>
+  </template>
+</dom-module>
+
+
+<script>
+  Polymer({
+    is: 'dashboard-chart',
+    ready: function () {
+      this.$.container.addEventListener('mouseover', function () {
+        console.log('foo');
+      });
+    }
+  });
+</script>

@@ -1,0 +1,125 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-behavior.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-error.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../bower_components/iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+
+<dom-module id="host-input">
+  <style>
+    :host {
+      display: block;
+      padding-bottom: 0.7em;
+    }
+    
+    input {
+      height: 40px;
+    }
+  </style>
+
+  <template>
+
+    <paper-input-container id="container" disabled$="[[disabled]]" no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" invalid="[[invalid]]">
+
+      <!-- Floating-Label -->
+      <label hidden$="[[!label]]">[[label]]</label>
+
+      <!-- Text-Input -->
+      <input is="iron-input" id="input" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" bind-value="{{value}}" type="ip" maxlength="15" required$="[[required]]" autocomplete="ip-address" name$="[[name]]" disabled$="[[disabled]]" invalid="{{invalid}}" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" size$="[[size]]">
+
+      <!-- Clear Icon -->
+      <template is="dom-if" if="[[focused]]">
+        <paper-icon-button suffix onclick="clearInput()" icon="clear" alt="clear" title="clear">
+        </paper-icon-button>
+      </template>
+
+      <!-- Error Message -->
+      <template is="dom-if" if="[[errorMessage]]">
+        <paper-input-error>[[errorMessage]]</paper-input-error>
+      </template>
+
+    </paper-input-container>
+  </template>
+
+</dom-module>
+
+<script>
+  (function () {
+    Polymer({
+      is: 'host-input',
+      behaviors: [
+      Polymer.PaperInputBehavior,
+      Polymer.IronValidatableBehavior,
+      Polymer.IronFormElementBehavior
+    ],
+      properties: {
+        /**
+         * The label for this input.
+         */
+        label: {
+          type: String,
+          value: "Host-IP/Name"
+        },
+        value: {
+          observer: '_onValueChanged'
+        }
+      },
+      observers: [
+      '_onFocusedChanged(focused)'
+    ],
+      ready: function () {
+        this.autoValidate = true;
+        // If there's an initial input, validate it.
+        if (this.value)
+          this._handleAutoValidate();
+      },
+      /**
+       * A handler that is called on input
+       */
+      _onValueChanged: function (value, oldValue) {
+        this._handleAutoValidate();
+      },
+      /**
+       * Validates a host-ip or -name
+       */
+      _validateHostIp: function (value) {
+
+        var pattern = /^([a-zA-Z]*|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})?$/;
+        if (value && value.match(pattern) !== null) {
+          return true;
+        }
+        return false;
+      },
+      /**
+       * Returns true if the element has a valid value, and sets the visual error state.
+       *
+       * @return {boolean} Whether the input is currently valid or not.
+       */
+      validate: function () {
+        // Empty, non-required input is valid.
+        if (!this.required && this.value == '') {
+          return true;
+        }
+        var valid = this._validateHostIp(this.value);
+        // Update the container and its addons (i.e. the custom error-message).
+        this.$.container.invalid = !valid;
+        this.$.container.updateAddons({
+          inputElement: this.$.input,
+          value: this.value,
+          invalid: !valid
+        });
+        return valid;
+      },
+      /**
+       * Overwrite from Polymer.IronControlState.
+       */
+      _onFocusedChanged: function (focused) {
+        if (!focused) {
+          this._handleAutoValidate();
+        }
+      }
+    })
+  })();
+</script>

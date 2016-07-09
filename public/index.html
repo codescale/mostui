@@ -72,9 +72,9 @@
 
       <div class="layout horizontal wrap">
         <template id="grid" is="dom-repeat" items="{{urls}}">
-          <dashboard-chart url="{{item}}" index="[[index]]"></dashboard-chart>
+          <dashboard-chart url="{{item}}" index="[[index]]" on-close="_removeServer"></dashboard-chart>
         </template>
-        <paper-icon-button id="addServer" icon="add" title="Add Chart" on-tap="addServer"></paper-icon-button>
+        <paper-icon-button id="addServer" icon="add" title="Add Chart" on-tap="_addServer"></paper-icon-button>
       </div>
     </template>
 
@@ -82,10 +82,6 @@
     <script>
       Polymer({
         is: 'mostui-dashboard',
-        invalid: {
-          type: Boolean,
-          value: true
-        },
         properties: {
           urls: {
             type: Object
@@ -99,7 +95,20 @@
           }
           return false;
         },
-        addServer: function ()  {
+        _removeServer: function (event) {
+
+          this.urls.splice(event.target.index, 1);
+          this.notifyPath("urls", this.urls.slice());
+
+          var url = event.target.url;
+          for (var i = 0; i < this.urls.length; i++) {
+            if (this.urls[i] === url) {
+              return;
+            }
+          }
+          window.io.emit('removeServer', event.target.url);
+        },
+        _addServer: function ()  {
           this.addSeries();
         },
         addSeries: function (url) {

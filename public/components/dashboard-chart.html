@@ -16,6 +16,7 @@
         position: absolute;
         margin-top: -20px;
         margin-left: 120px;
+        visibility: hidden;
       }
       
       paper-fab.grey {
@@ -25,7 +26,7 @@
     </style>
 
     <paper-material id="container" elevation="1">
-      <paper-fab mini icon="clear" title="close" class="grey"></paper-fab>
+      <paper-fab mini id="btnClose" icon="clear" title="close" class="grey" on-tap="_close"></paper-fab>
       <!-- Host-IP/Name -->
       <host-input placeholder="Enter Host-IP" label="Host" value="{{url}}" style="margin: 0 5px 0 5px; width: 160px" error-message="Enter a valid hostname or ip!"></host-input>
       <!-- Chart -->
@@ -39,9 +40,19 @@
   Polymer({
     is: 'dashboard-chart',
     ready: function () {
-      this.$.container.addEventListener('mouseover', function () {
-        console.log('foo');
+      this.$.container.addEventListener('mouseover', () => {
+        if (this.$.btnClose.style.visibility === 'hidden') {
+          this.$.container.elevation = 3;
+          this.$.btnClose.style.visibility = 'visible'
+        }
       });
+      this.$.container.addEventListener('mouseout', () => {
+        this.$.container.elevation = 1;
+        this.$.btnClose.style.visibility = 'hidden'
+      });
+    },
+    _close: function () {
+      this.fire('close');
     }
   });
 </script>

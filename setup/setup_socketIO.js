@@ -72,6 +72,10 @@ socketIO.on('connection', function (socket) {
   socket.on('disconnect', function () {
     console.log('Socket disconected');
   });
+  socket.on('removeServer', function (url) {
+    console.log('Remove ' + url);
+    serverCache.removeServer(sid, url);
+  });
 });
 socketIO.on('connect', function (msg) {
   console.log("Connection for socket-io: " + msg.id);
